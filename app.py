@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from scraper import scrape_price  # Import the scraper
-import random  # For simulating price fluctuations
+from twilio.rest import Client
 
 app = Flask(__name__)
 
@@ -16,8 +16,11 @@ def track_price():
     product_url = data['url']
     target_price = float(data['price'])  # The target price provided by the user
 
-    # Scrape the product price from the given URL
-    current_price = scrape_price(product_url)
+    try:
+        # Scrape the product price from the given URL
+        current_price = scrape_price(product_url)
+    except ValueError as e:
+        return jsonify({'success': False, 'message': str(e)})
 
     tracked_products.append({
         'url': product_url,
@@ -26,16 +29,25 @@ def track_price():
     })
 
     if current_price <= target_price:
-        # Simulate the alert (instead of Twilio SMS)
         send_alert(product_url, current_price)
 
     return jsonify({'success': True, 'message': 'Price tracking started!'})
 
 def send_alert(product_url, current_price):
-    # Simulate an alert by printing the message
-    print(f"Simulated Alert: The product at {product_url} is now at ₹{current_price:.2f}")
-    # Alternatively, you can return a success message if you prefer to show it on the frontend
-    return f"Simulated Alert: The product at {product_url} is now at ₹{current_price:.2f}"
+    try:
+        account_sid = 'your_account_sid'  # Replace with your Twilio SID
+        auth_token = 'your_auth_token'  # Replace with your Twilio auth token
+        client = Client(account_sid, auth_token)
+
+        message = client.messages.create(
+            body=f'Price alert! The product at {product_url} is now at ₹{current_price:.2f}',  # Send price in INR (₹)
+            from_='+1234567890',  # Replace with your Twilio number
+            to='+0987654321'      # Replace with the user's phone number
+        )
+
+        print(f"Message sent: {message.sid}")
+    except Exception as e:
+        print(f"Error sending message: {e}")
 
 if __name__ == '__main__':
     import os

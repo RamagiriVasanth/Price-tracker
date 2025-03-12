@@ -48,6 +48,8 @@
                     if (data.message) {
                         document.getElementById('alertMessage').innerText = data.message;
                     }
+                } else {
+                    alert('Error: ' + data.message);
                 }
             })
             .catch(error => console.error('Error:', error));

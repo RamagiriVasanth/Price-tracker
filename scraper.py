@@ -8,8 +8,11 @@ def scrape_price(url):
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    # Example: Scrape price from an Amazon India page (adjust based on your target page structure)
-    price = soup.find('span', {'id': 'priceblock_ourprice'}).text.strip()  # Modify based on the website you're scraping
-    price = price.replace('₹', '').replace(',', '').strip()  # Remove '₹' and commas
-    price = float(price)  # Convert to float for comparison
-    return price
+    # Scrape price from an Amazon page (adjust based on your target page structure)
+    # You might need to adjust this based on the website you're scraping from.
+    price_tag = soup.find('span', {'class': 'a-price-whole'})  # Modify based on the actual page structure
+    if price_tag:
+        price = price_tag.text.strip().replace(',', '')  # Clean up the price string
+        return float(price[1:])  # Remove ₹ symbol and convert to float
+    else:
+        raise ValueError("Could not find the price on the page")
