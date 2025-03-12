@@ -12,11 +12,11 @@ def scrape_price(url):
     }
 
     try:
-        # Set a timeout of 15 seconds for the request
+        # Set a timeout of 30 seconds for the request to avoid timeouts
         print(f"Fetching URL: {url}")
-        response = requests.get(url, headers=headers, timeout=15)
+        response = requests.get(url, headers=headers, timeout=30)
 
-        # Log the status code and first 500 characters of the HTML content
+        # Log the status code and first 500 characters of the HTML content for debugging
         print(f"Status code: {response.status_code}")
         print(f"Response Body (first 500 characters): {response.text[:500]}")
 
