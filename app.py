@@ -27,19 +27,16 @@ def track_price():
         'current_price': current_price
     })
 
-    # Check if the price is below or equal to the target price
+    # Simulate an alert message (for the browser-based alert)
     if current_price <= target_price:
-        # Price alert triggered
-        return jsonify({
-            'success': True,
-            'message': f"Price alert! The price of {product_url} has dropped to ₹{current_price}. Tracking started."
-        })
-    else:
-        # Price tracking started but no alert triggered
-        return jsonify({
-            'success': True,
-            'message': f"Price tracking started for {product_url}. Current price: ₹{current_price}. Waiting for price drop."
-        })
+        send_alert(product_url, current_price)
+
+    return jsonify({'success': True, 'message': 'Price tracking started!'})
+
+def send_alert(product_url, current_price):
+    """Simulate alert (for browser notification or logging)"""
+    print(f"ALERT: The price of the product at {product_url} is now ₹{current_price}.")
+    # Here, you can directly return an alert message or log it in the console.
 
 if __name__ == '__main__':
     import os
