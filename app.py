@@ -12,8 +12,16 @@ def index():
 @app.route('/track-price', methods=['POST'])
 def track_price():
     data = request.json
-    product_url = data['url']
-    target_price = float(data['price'])  # The target price provided by the user
+
+    # Validate URL and price
+    if 'url' not in data or 'price' not in data:
+        return jsonify({'success': False, 'message': 'Missing url or price parameter.'})
+
+    try:
+        product_url = data['url']
+        target_price = float(data['price'])  # The target price provided by the user
+    except ValueError:
+        return jsonify({'success': False, 'message': 'Invalid price value.'})
 
     # Scrape the product price from the given URL
     try:

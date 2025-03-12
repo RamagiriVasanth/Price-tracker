@@ -1,5 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 def scrape_price(url):
     headers = {
@@ -11,33 +14,38 @@ def scrape_price(url):
         response = requests.get(url, headers=headers, timeout=10)
         
         # Log the status code and the first 500 characters of the HTML content
-        print(f"Status code: {response.status_code}")
-        print(f"Response Body: {response.text[:500]}")  # Inspect first 500 characters
+        logging.debug(f"Status code: {response.status_code}")
+        logging.debug(f"Response Body: {response.text[:500]}")  # Inspect first 500 characters
 
         # Raise an error for HTTP errors
         response.raise_for_status()
 
+        # Check if the response body is empty
+        if not response.text:
+            raise ValueError("Received empty response body from the server")
+
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        # Scrape price from the page
-        price_tag = soup.find('span', {'class': 'a-price-whole'})  # Amazon-specific selector
+        # Scrape price from the page (Amazon-specific selector)
+        price_tag = soup.find('span', {'class': 'a-price-whole'})  # Modify this selector based on page structure
         if price_tag:
             price = price_tag.text.strip().replace(',', '')  # Clean up the price string
+            logging.debug(f"Extracted Price: {price}")
             return float(price)  # Convert to float
         else:
             raise ValueError("Could not find the price on the page")
 
     except requests.exceptions.RequestException as e:
         # Catch network or request errors (e.g., 404, 500)
-        print(f"Request error: {e}")
+        logging.error(f"Request error: {e}")
         raise ValueError("Failed to retrieve the page. Please check the URL.")
     
     except ValueError as e:
         # Catch missing or incorrect price errors
-        print(f"Value error: {e}")
+        logging.error(f"Value error: {e}")
         raise ValueError("Could not extract price. Please check the page structure or URL.")
     
     except Exception as e:
         # Catch any other unforeseen errors
-        print(f"An error occurred: {e}")
+        logging.error(f"An error occurred: {e}")
         raise ValueError("An unexpected error occurred while scraping the price.")
