@@ -39,6 +39,10 @@ def scrape_price(url):
         if not price_tag:
             # Try the new price formatting for "a-price-symbol" class
             price_tag = soup.find('span', {'class': 'a-price-symbol'}) 
+        
+        if not price_tag:
+            # Additional fallback selector
+            price_tag = soup.find('span', {'id': 'priceblock_dealprice'})  # For Amazon Deals
 
         if price_tag:
             # Clean up the price string, remove unwanted characters
