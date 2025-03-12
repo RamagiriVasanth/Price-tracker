@@ -1,9 +1,11 @@
-document.getElementById("price-form").addEventListener("submit", function(event) {
+document.getElementById("priceForm").addEventListener("submit", function(event) {
     event.preventDefault();
 
-    const productUrl = document.getElementById("product-url").value;
-    const targetPrice = document.getElementById("target-price").value;
+    // Fetch values from the form
+    const productUrl = document.getElementById("url").value; // Corrected the id to match HTML
+    const targetPrice = document.getElementById("price").value; // Corrected the id to match HTML
 
+    // Send POST request to track price
     fetch('/track-price', {
         method: 'POST',
         headers: {
@@ -13,14 +15,18 @@ document.getElementById("price-form").addEventListener("submit", function(event)
     })
     .then(response => response.json())
     .then(data => {
+        const alertMessage = document.getElementById('alertMessage');
+        alertMessage.innerText = data.message; // Display the response message
         if (data.success) {
-            alert("Product is now being tracked!");
+            alertMessage.className = 'success'; // Apply success styling
         } else {
-            alert("Failed to track product.");
+            alertMessage.className = 'error'; // Apply error styling
         }
     })
     .catch(error => {
         console.error("Error:", error);
-        alert("Failed to track product.");
+        const alertMessage = document.getElementById('alertMessage');
+        alertMessage.innerText = "Failed to track product.";
+        alertMessage.className = 'error'; // Apply error styling
     });
 });

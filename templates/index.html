@@ -14,18 +14,18 @@
             <input type="url" id="url" name="url" required><br>
 
             <label for="price">Target Price (₹):</label>
-            <input type="number" id="price" name="price" required><br>
+            <input type="number" id="price" name="price" required step="0.01"><br>
 
             <button type="submit">Track Price</button>
         </form>
 
         <!-- Display message after form submission -->
-        <div id="alertMessage"></div>
+        <div id="alertMessage" style="margin-top: 20px; font-size: 1.2em;"></div>
     </div>
 
     <script>
         document.getElementById('priceForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+            event.preventDefault();  // Prevent the form from submitting the traditional way
 
             var url = document.getElementById('url').value;
             var price = document.getElementById('price').value;
@@ -40,17 +40,27 @@
                     price: price
                 })
             })
-            .then(response => response.json())
+            .then(response => response.json())  // Parse the JSON response
             .then(data => {
+                // Clear the previous message
+                document.getElementById('alertMessage').innerText = '';
+
                 if (data.success) {
-                    alert('Price tracking started!');
-                    // Display success message on the page
+                    // Display success message
+                    document.getElementById('alertMessage').style.color = 'green';
                     document.getElementById('alertMessage').innerText = data.message;
                 } else {
-                    alert('Error: ' + data.message);
+                    // Display error message
+                    document.getElementById('alertMessage').style.color = 'red';
+                    document.getElementById('alertMessage').innerText = 'Error: ' + data.message;
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                // Handle errors in the fetch request
+                console.error('Error:', error);
+                document.getElementById('alertMessage').style.color = 'red';
+                document.getElementById('alertMessage').innerText = 'An unexpected error occurred. Please try again.';
+            });
         });
     </script>
 </body>
