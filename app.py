@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from scraper import scrape_price  # We'll create scraper later
+from scraper import scrape_price  # Import the scraper
 from twilio.rest import Client
 
 app = Flask(__name__)
@@ -31,14 +31,14 @@ def track_price():
     return jsonify({'success': True})
 
 def send_alert(product_url, current_price):
-    account_sid = 'your_account_sid'
-    auth_token = 'your_auth_token'
+    account_sid = 'your_account_sid'  # Replace with your Twilio SID
+    auth_token = 'your_auth_token'  # Replace with your Twilio auth token
     client = Client(account_sid, auth_token)
 
     message = client.messages.create(
-        body=f'Price alert! The product at {product_url} is now at ₹{current_price}',  # Using INR (₹)
-        from_='+1234567890',  # Your Twilio number
-        to='+0987654321'      # User's phone number
+        body=f'Price alert! The product at {product_url} is now at ₹{current_price:.2f}',  # Send price in INR (₹)
+        from_='+1234567890',  # Replace with your Twilio number
+        to='+0987654321'      # Replace with the user's phone number
     )
 
 if __name__ == '__main__':
