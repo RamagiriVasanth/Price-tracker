@@ -51,11 +51,16 @@
             .then(response => response.json())
             .then(data => {
                 const alertMessage = document.getElementById('alertMessage');
-                alertMessage.innerText = data.message; // Display the response message
+                if (data.success !== undefined) {
+                    alertMessage.innerText = data.message; // Display the response message
 
-                if (data.success) {
-                    alertMessage.style.color = 'green';
+                    if (data.success) {
+                        alertMessage.style.color = 'green';
+                    } else {
+                        alertMessage.style.color = 'red';
+                    }
                 } else {
+                    alertMessage.innerText = 'Unexpected response from the server. Please try again later.';
                     alertMessage.style.color = 'red';
                 }
             })

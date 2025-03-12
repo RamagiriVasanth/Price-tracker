@@ -12,7 +12,6 @@ def index():
 @app.route('/track-price', methods=['POST'])
 def track_price():
     data = request.json  # Parse the incoming JSON data from the request
-    print(f"Received Data: {data}")  # Log incoming data for debugging
 
     # Validate URL and price fields
     if 'url' not in data or 'price' not in data:
@@ -28,7 +27,6 @@ def track_price():
     # Scrape the product price from the URL using the scraper function
     try:
         current_price = scrape_price(product_url)
-        print(f"Scraped Price: {current_price}")  # Log the current price
     except ValueError as e:
         return jsonify({'success': False, 'message': str(e)})
     except Exception as e:
