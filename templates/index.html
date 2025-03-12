@@ -20,7 +20,7 @@
         </form>
 
         <!-- Display message after form submission -->
-        <div id="alertMessage" style="margin-top: 20px; font-size: 1.2em;"></div>
+        <div id="alertMessage" style="margin-top: 20px; font-size: 1.2em;" aria-live="polite"></div>
     </div>
 
     <script>
@@ -55,6 +55,9 @@
                     // Display success message
                     document.getElementById('alertMessage').style.color = 'green';
                     document.getElementById('alertMessage').innerText = data.message;
+
+                    // Clear the form after successful submission
+                    document.getElementById('priceForm').reset();
                 } else {
                     // Display error message
                     document.getElementById('alertMessage').style.color = 'red';
