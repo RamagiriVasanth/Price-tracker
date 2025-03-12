@@ -14,7 +14,7 @@
             <input type="url" id="url" name="url" required><br>
 
             <label for="price">Target Price (₹):</label>
-            <input type="number" id="price" name="price" required step="0.01"><br>
+            <input type="number" id="price" name="price" required step="0.01" min="0"><br>
 
             <button type="submit">Track Price</button>
         </form>
@@ -28,7 +28,13 @@
             event.preventDefault();  // Prevent the form from submitting the traditional way
 
             var url = document.getElementById('url').value;
-            var price = document.getElementById('price').value;
+            var price = parseFloat(document.getElementById('price').value);  // Ensure price is a float
+
+            if (isNaN(price) || price <= 0) {
+                document.getElementById('alertMessage').style.color = 'red';
+                document.getElementById('alertMessage').innerText = 'Please enter a valid target price.';
+                return;  // Prevent further execution if price is invalid
+            }
 
             fetch('/track-price', {
                 method: 'POST',

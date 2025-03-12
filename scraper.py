@@ -46,7 +46,7 @@ def scrape_price(url):
 
         if price_tag:
             # Clean up the price string, remove unwanted characters
-            price = price_tag.text.strip().replace(',', '').replace('₹', '')
+            price = price_tag.text.strip().replace(',', '').replace('₹', '').replace('$', '').strip()
             print(f"Price found: ₹{price}")
             return float(price)  # Return the price as a float
         else:

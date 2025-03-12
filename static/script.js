@@ -2,8 +2,16 @@ document.getElementById("priceForm").addEventListener("submit", function(event) 
     event.preventDefault();
 
     // Fetch values from the form
-    const productUrl = document.getElementById("url").value; // Corrected the id to match HTML
-    const targetPrice = document.getElementById("price").value; // Corrected the id to match HTML
+    const productUrl = document.getElementById("url").value.trim(); // Trim whitespace from URL
+    const targetPrice = document.getElementById("price").value.trim(); // Trim whitespace from price
+
+    // Validate the inputs
+    if (!productUrl || !targetPrice || isNaN(targetPrice) || parseFloat(targetPrice) <= 0) {
+        const alertMessage = document.getElementById('alertMessage');
+        alertMessage.innerText = "Please provide a valid product URL and target price.";
+        alertMessage.className = 'error'; // Apply error styling
+        return; // Exit the function if validation fails
+    }
 
     // Send POST request to track price
     fetch('/track-price', {
