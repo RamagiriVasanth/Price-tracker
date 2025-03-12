@@ -1,9 +1,13 @@
 document.getElementById("priceForm").addEventListener("submit", function(event) {
     event.preventDefault();
+    console.log('Form submitted');  // Debugging log
 
     // Fetch values from the form
     const productUrl = document.getElementById("url").value.trim(); // Trim whitespace from URL
     const targetPrice = document.getElementById("price").value.trim(); // Trim whitespace from price
+    
+    console.log('Product URL:', productUrl);  // Debugging log
+    console.log('Target Price:', targetPrice);  // Debugging log
 
     // Validate the inputs
     if (!productUrl || !targetPrice || isNaN(targetPrice) || parseFloat(targetPrice) <= 0) {

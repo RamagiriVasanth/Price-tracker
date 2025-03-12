@@ -20,22 +20,24 @@
         </form>
 
         <!-- Display message after form submission -->
-        <div id="alertMessage" style="margin-top: 20px; font-size: 1.2em;" aria-live="polite"></div>
+        <div id="alertMessage" style="margin-top: 20px; font-size: 1.2em;"></div>
     </div>
 
     <script>
         document.getElementById('priceForm').addEventListener('submit', function(event) {
             event.preventDefault();  // Prevent the form from submitting the traditional way
 
-            var url = document.getElementById('url').value;
-            var price = parseFloat(document.getElementById('price').value);  // Ensure price is a float
+            var url = document.getElementById('url').value.trim(); // Trim whitespace from URL
+            var price = parseFloat(document.getElementById('price').value.trim()); // Ensure price is a float
 
-            if (isNaN(price) || price <= 0) {
+            // Validate inputs
+            if (!url || isNaN(price) || price <= 0) {
                 document.getElementById('alertMessage').style.color = 'red';
-                document.getElementById('alertMessage').innerText = 'Please enter a valid target price.';
-                return;  // Prevent further execution if price is invalid
+                document.getElementById('alertMessage').innerText = 'Please provide a valid product URL and target price.';
+                return;  // Stop the process if validation fails
             }
 
+            // Send POST request to track price
             fetch('/track-price', {
                 method: 'POST',
                 headers: {
@@ -46,29 +48,22 @@
                     price: price
                 })
             })
-            .then(response => response.json())  // Parse the JSON response
+            .then(response => response.json())
             .then(data => {
-                // Clear the previous message
-                document.getElementById('alertMessage').innerText = '';
+                const alertMessage = document.getElementById('alertMessage');
+                alertMessage.innerText = data.message; // Display the response message
 
                 if (data.success) {
-                    // Display success message
-                    document.getElementById('alertMessage').style.color = 'green';
-                    document.getElementById('alertMessage').innerText = data.message;
-
-                    // Clear the form after successful submission
-                    document.getElementById('priceForm').reset();
+                    alertMessage.style.color = 'green';
                 } else {
-                    // Display error message
-                    document.getElementById('alertMessage').style.color = 'red';
-                    document.getElementById('alertMessage').innerText = 'Error: ' + data.message;
+                    alertMessage.style.color = 'red';
                 }
             })
             .catch(error => {
-                // Handle errors in the fetch request
                 console.error('Error:', error);
-                document.getElementById('alertMessage').style.color = 'red';
-                document.getElementById('alertMessage').innerText = 'An unexpected error occurred. Please try again.';
+                const alertMessage = document.getElementById('alertMessage');
+                alertMessage.innerText = 'An unexpected error occurred. Please try again.';
+                alertMessage.style.color = 'red';
             });
         });
     </script>
