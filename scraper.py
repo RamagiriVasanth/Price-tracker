@@ -15,27 +15,36 @@ def scrape_price(url):
         print(f"Status code: {response.status_code}")
         print(f"Response Body (first 500 characters): {response.text[:500]}")
 
-        # Raise an error for HTTP errors
+        # If the response is not successful, raise an exception
         response.raise_for_status()
 
+        # Check if the content is correct (not empty or containing an error message)
+        if "robot check" in response.text.lower():
+            raise ValueError("The request was blocked, possibly by a bot protection mechanism.")
+
+        # Parse the page content using BeautifulSoup
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        # Attempt to scrape the price using multiple possible selectors
-        price_tag = soup.find('span', {'class': 'a-price-whole'})
+        # Try different possible price selectors
+        price_tag = soup.find('span', {'class': 'a-price-whole'})  # Amazon price selector
+        if not price_tag:
+            # Try other possible selectors if the main one is not found
+            price_tag = soup.find('span', {'id': 'priceblock_ourprice'})  # Another possible selector
         
         if not price_tag:
-            # If price isn't found, try another possible selector
-            price_tag = soup.find('span', {'id': 'priceblock_ourprice'})
-        
+            # Try the new price formatting for "a-price-symbol" class
+            price_tag = soup.find('span', {'class': 'a-price-symbol'}) 
+
         if price_tag:
-            price = price_tag.text.strip().replace(',', '')  # Clean up the price string
+            # Clean up the price string, remove unwanted characters
+            price = price_tag.text.strip().replace(',', '').replace('₹', '')
             print(f"Price found: ₹{price}")
-            return float(price)  # Convert to float
+            return float(price)  # Return the price as a float
         else:
-            raise ValueError("Could not find the price on the page")
+            raise ValueError("Could not find the price on the page.")
 
     except requests.exceptions.RequestException as e:
-        # Catch network or request errors (e.g., 404, 500)
+        # Catch network or request errors (e.g., 404, 500, timeouts)
         print(f"Request error: {e}")
         raise ValueError("Failed to retrieve the page. Please check the URL.")
 
@@ -45,6 +54,6 @@ def scrape_price(url):
         raise ValueError("Could not extract price. Please check the page structure or URL.")
 
     except Exception as e:
-        # Catch any other unforeseen errors
+        # Catch any unforeseen errors and log the exception
         print(f"An error occurred: {e}")
         raise ValueError("An unexpected error occurred while scraping the price.")
