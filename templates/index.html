@@ -44,19 +44,12 @@
             .then(data => {
                 if (data.success) {
                     alert('Price tracking started!');
-                    // If an alert is simulated, display it on the page
-                    if (data.message) {
-                        document.getElementById('alertMessage').innerText = data.message;
-                    }
+                    document.getElementById('alertMessage').innerText = data.message;
                 } else {
-                    alert('Error: ' + data.message);  // Show error message if any
-                    document.getElementById('alertMessage').innerText = 'Error: ' + data.message;
+                    alert('Error: ' + data.message);
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred: ' + error.message);  // Show error message in case of fetch failure
-            });
+            .catch(error => console.error('Error:', error));
         });
     </script>
 </body>

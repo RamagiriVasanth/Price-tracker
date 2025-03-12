@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, jsonify
 from scraper import scrape_price  # Import the scraper
-from twilio.rest import Client
 
 app = Flask(__name__)
 
@@ -19,38 +18,28 @@ def track_price():
     # Scrape the product price from the given URL
     try:
         current_price = scrape_price(product_url)
-
-        tracked_products.append({
-            'url': product_url,
-            'target_price': target_price,
-            'current_price': current_price
-        })
-
-        # Send an alert if the price is below or equal to the target price
-        if current_price <= target_price:
-            send_alert(product_url, current_price)
-
-        return jsonify({'success': True, 'message': 'Price tracking started!'})
-    
     except ValueError as e:
-        # Catch any errors from the scraper and send a helpful message back
         return jsonify({'success': False, 'message': str(e)})
 
-def send_alert(product_url, current_price):
-    try:
-        account_sid = 'your_account_sid'  # Replace with your Twilio SID
-        auth_token = 'your_auth_token'  # Replace with your Twilio auth token
-        client = Client(account_sid, auth_token)
+    tracked_products.append({
+        'url': product_url,
+        'target_price': target_price,
+        'current_price': current_price
+    })
 
-        message = client.messages.create(
-            body=f'Price alert! The product at {product_url} is now at ₹{current_price:.2f}',  # Send price in INR (₹)
-            from_='+1234567890',  # Replace with your Twilio number
-            to='+0987654321'      # Replace with the user's phone number
-        )
-
-        print(f"Message sent: {message.sid}")
-    except Exception as e:
-        print(f"Error sending message: {e}")
+    # Check if the price is below or equal to the target price
+    if current_price <= target_price:
+        # Price alert triggered
+        return jsonify({
+            'success': True,
+            'message': f"Price alert! The price of {product_url} has dropped to ₹{current_price}. Tracking started."
+        })
+    else:
+        # Price tracking started but no alert triggered
+        return jsonify({
+            'success': True,
+            'message': f"Price tracking started for {product_url}. Current price: ₹{current_price}. Waiting for price drop."
+        })
 
 if __name__ == '__main__':
     import os
