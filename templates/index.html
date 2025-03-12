@@ -49,7 +49,7 @@
                         document.getElementById('alertMessage').innerText = data.message;
                     }
                 } else {
-                    alert('Error: ' + data.message);
+                    alert(data.message);  // Display any error message
                 }
             })
             .catch(error => console.error('Error:', error));
