@@ -49,10 +49,14 @@
                         document.getElementById('alertMessage').innerText = data.message;
                     }
                 } else {
-                    alert(data.message);  // Display any error message
+                    alert('Error: ' + data.message);  // Show error message if any
+                    document.getElementById('alertMessage').innerText = 'Error: ' + data.message;
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred: ' + error.message);  // Show error message in case of fetch failure
+            });
         });
     </script>
 </body>

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from scraper import scrape_price  # Import the updated scraper
+from scraper import scrape_price  # Import the scraper
 from twilio.rest import Client
 
 app = Flask(__name__)
@@ -16,8 +16,8 @@ def track_price():
     product_url = data['url']
     target_price = float(data['price'])  # The target price provided by the user
 
+    # Scrape the product price from the given URL
     try:
-        # Scrape the product price from the given URL
         current_price = scrape_price(product_url)
 
         tracked_products.append({
@@ -26,15 +26,15 @@ def track_price():
             'current_price': current_price
         })
 
-        # Check if current price is less than or equal to the target price
+        # Send an alert if the price is below or equal to the target price
         if current_price <= target_price:
             send_alert(product_url, current_price)
 
         return jsonify({'success': True, 'message': 'Price tracking started!'})
-
-    except Exception as e:
+    
+    except ValueError as e:
+        # Catch any errors from the scraper and send a helpful message back
         return jsonify({'success': False, 'message': str(e)})
-
 
 def send_alert(product_url, current_price):
     try:
