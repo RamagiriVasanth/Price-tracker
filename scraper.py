@@ -7,7 +7,11 @@ def scrape_price(url):
     }
     try:
         response = requests.get(url, headers=headers)
-        response.raise_for_status()  # Raise an exception for HTTP errors (e.g., 404, 500)
+        print(f"Status code: {response.status_code}")  # Log status code
+        response.raise_for_status()  # This will raise an exception for HTTP errors (e.g., 404, 500)
+
+        # Optionally, print out the first 500 characters of the page
+        print(response.text[:500])  # Log part of the page content to check
 
         soup = BeautifulSoup(response.text, 'html.parser')
 
