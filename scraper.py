@@ -10,7 +10,7 @@ def scrape_price(url):
         # Set a timeout of 10 seconds for the request
         print(f"Fetching URL: {url}")
         response = requests.get(url, headers=headers, timeout=10)
-        
+
         # Log the status code and first 500 characters of the HTML content
         print(f"Status code: {response.status_code}")
         print(f"Response Body (first 500 characters): {response.text[:500]}")
@@ -20,16 +20,13 @@ def scrape_price(url):
 
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        # Try to find the price using multiple potential selectors
+        # Attempt to scrape the price using multiple possible selectors
         price_tag = soup.find('span', {'class': 'a-price-whole'})
+        
         if not price_tag:
+            # If price isn't found, try another possible selector
             price_tag = soup.find('span', {'id': 'priceblock_ourprice'})
-        if not price_tag:
-            price_tag = soup.find('span', {'id': 'priceblock_dealprice'})
-        if not price_tag:
-            price_tag = soup.find('span', {'class': 'a-price-symbol'})  # In case the price symbol is separate
-
-        # Check if price_tag is found, otherwise raise error
+        
         if price_tag:
             price = price_tag.text.strip().replace(',', '')  # Clean up the price string
             print(f"Price found: ₹{price}")
@@ -41,12 +38,12 @@ def scrape_price(url):
         # Catch network or request errors (e.g., 404, 500)
         print(f"Request error: {e}")
         raise ValueError("Failed to retrieve the page. Please check the URL.")
-    
+
     except ValueError as e:
         # Catch missing or incorrect price errors
         print(f"Value error: {e}")
         raise ValueError("Could not extract price. Please check the page structure or URL.")
-    
+
     except Exception as e:
         # Catch any other unforeseen errors
         print(f"An error occurred: {e}")
