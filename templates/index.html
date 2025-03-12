@@ -38,7 +38,7 @@
                 })
             })
             .then(response => response.json())
-            .then(data => alert('Price tracking started!'))
+            .then(data => alert(data.message))  // Display success message
             .catch(error => console.error('Error:', error));
         });
     </script>
